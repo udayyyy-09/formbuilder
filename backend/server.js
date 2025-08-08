@@ -16,7 +16,6 @@ app.use('/api/forms', formRoutes);
 app.use('/api/responses', responseRoutes);
 
 // MongoDB Atlas Connection
-console.log("connection strong", process.env.MongoDBURL);
 mongoose.connect(process.env.MongoDBURL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
