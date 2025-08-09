@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const formRoutes = require('./routes/form');
 const responseRoutes = require('./routes/resp');
+const bodyParser = require('body-parser');
+
 require('dotenv').config();
 const app = express();
+
+// Increase limit to 10MB (or more if needed)
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
 // Middleware
 app.use(cors());

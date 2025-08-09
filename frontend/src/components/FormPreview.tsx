@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FormData, Question } from "@/types/form"
+import { FormData, Question,FormResponse } from "@/types/form"
 import CategorizePreview from "@/components/question-previews/CategorizePreview"
 import ClozePreview from "@/components/question-previews/ClozePreview"
 import ComprehensionPreview from "@/components/question-previews/ComprehensionPreview"
@@ -21,27 +21,40 @@ export default function FormPreview({ formData }: FormPreviewProps) {
     }))
   }
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true)
-    try {
-      const resp = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/responses`)
-      console.log('Submitting form responses:', {
-        formId: formData.id,
-        responses:resp,
-        submittedAt: new Date()
-      })
-      
-      alert('Form submitted successfully!')
-      console.log("Form submit with response");
-      setResponses({})
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      alert('Error submitting form')
-    } finally {
-      setIsSubmitting(false)
+const handleSubmit = async () => {
+  setIsSubmitting(true);
+  
+  try {
+    if (!formData.id) {
+      throw new Error("Form must be saved before submitting responses");
     }
-  }
 
+      const payload: FormResponse = {
+        formId: formData.id,
+        responses: Object.fromEntries(
+          Object.entries(responses).map(([questionId, answer]) => [
+            questionId.startsWith('q_') ? questionId.substring(2) : questionId,
+            answer
+          ])
+        )
+    };
+
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/responses`,
+      payload
+    );
+    console.log("response: ", response);
+
+    alert("Form submitted successfully!");
+    setResponses({});
+  } catch (error: any) {
+    console.error("Submission error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Submission failed");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   const renderQuestionPreview = (question: Question) => {
     const response = responses[question.id]
     

@@ -12,9 +12,10 @@ export default function ClozePreview({ question, response, onUpdate }: ClozePrev
   const options = question.options as { text: string, blanks: string[] }
   const [answers, setAnswers] = useState<string[]>(response || new Array(options.blanks.length).fill(''))
 
-  useEffect(() => {
-    onUpdate(answers)
-  }, [answers])
+useEffect(() => {
+  // Format response as an array of answer strings
+  onUpdate(answers);
+}, [answers]);
 
   const updateAnswer = (index: number, value: string) => {
     const newAnswers = [...answers]

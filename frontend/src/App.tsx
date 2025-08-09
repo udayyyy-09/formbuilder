@@ -18,21 +18,36 @@ export default function App() {
     updatedAt: new Date(),
   });
 
-  const handleSaveForm = async () => {
-    setIsSaving(true);
-    try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/forms`, formData,{
+const handleSaveForm = async () => {
+  setIsSaving(true);
+  console.log("Sending formData:", formData);
+  try {
+    const resp = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/forms`,
+      formData,
+      {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         }
-      });
-      alert("Form saved successfully!");
-    } catch (error) {
-      alert("Error saving form");
-    } finally {
-      setIsSaving(false);
-    }
-  };
+      }
+    );
+    
+    // Update the formData with the ID from the response
+    const savedForm = resp.data;
+    setFormData(prev => ({
+      ...prev,
+      id: savedForm._id // MongoDB returns the ID as _id
+    }));
+    
+    console.log("Form saved successfully with ID:", savedForm._id);
+    alert("Form saved successfully!");
+  } catch (error: any) {
+    console.error("Error saving form:", error.response?.data);
+    alert("Error saving form");
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
