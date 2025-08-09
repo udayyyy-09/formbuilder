@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -10,12 +10,10 @@ import { FormData } from "@/types/form";
 import axios from "axios";
 import { Landing } from './components/Land';
 import { motion, AnimatePresence } from "framer-motion";
-
 export default function App() {
   const [activeTab, setActiveTab] = useState("editor");
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showBuilder, setShowBuilder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -27,6 +25,32 @@ export default function App() {
     createdAt: new Date(),
     updatedAt: new Date(),
   });
+
+  const [showBuilder, setShowBuilder] = useState(() => {
+    // Check localStorage for saved state
+    const saved = localStorage.getItem('showBuilder');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+    useEffect(() => {
+    localStorage.setItem('showBuilder', JSON.stringify(showBuilder));
+  }, [showBuilder]);
+
+  // Optional: Add this to also persist form data
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('formData');
+    if (savedFormData) {
+      const parsed = JSON.parse(savedFormData);
+      // Convert string dates back to Date objects
+      parsed.createdAt = new Date(parsed.createdAt);
+      parsed.updatedAt = new Date(parsed.updatedAt);
+      setFormData(parsed);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
 
 const handleSaveForm = async () => {
   setIsSaving(true);
