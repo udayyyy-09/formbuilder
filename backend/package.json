@@ -1,7 +1,6 @@
 {
   "name": "formbuilder-backend",
   "version": "1.0.0",
-  "description": "Backend for FormBuilder app",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
