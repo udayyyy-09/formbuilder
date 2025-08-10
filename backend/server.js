@@ -13,7 +13,9 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://formbuilder-pncf.vercel.app" // Replace with your frontend URL
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -35,7 +37,7 @@ mongoose.connect(process.env.MongoDBURL, {
 )
   .catch(err => console.error('Atlas connection error:', err));
 
-app.get("/test", ()=>{
+app.get("/test", (req,res)=>{
     console.log("test route");
     res.json("Server is running successfully");
 })
